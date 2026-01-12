@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -13,6 +15,7 @@ import {
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -28,6 +31,8 @@ import { PostResponseDto } from './dto/post-response.dto';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
+import { ListPostsQueryDto } from './dto/list-posts-query.dto';
+import { ListPostsResponseDto } from './dto/list-posts-response.dto';
 
 function safeFilename(
   _req: unknown,
@@ -59,6 +64,12 @@ function coverFileFilter(
 @Controller('posts')
 export class PostsController {
   constructor(private readonly posts: PostsService) {}
+
+  @Get()
+  @ApiOkResponse({ type: ListPostsResponseDto, description: 'Feed público' })
+  list(@Query() query: ListPostsQueryDto) {
+    return this.posts.listPublished(query);
+  }
 
   @Post()
   @ApiBearerAuth('bearer')

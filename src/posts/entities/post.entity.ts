@@ -29,7 +29,7 @@ export class PostEntity {
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ type: 'text', array: true, default: [] })
+  @Column({ type: 'text', array: true, default: () => "'{}'" })
   tags: string[];
 
   @Column({ type: 'text', nullable: true })
