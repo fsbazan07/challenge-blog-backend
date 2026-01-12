@@ -6,11 +6,14 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { User } from '../users/entities/user.entity';
 import { Role } from 'src/users/entities/role.entity';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
     ConfigModule,
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -22,8 +25,7 @@ import { Role } from 'src/users/entities/role.entity';
         if (!refreshSecret)
           throw new Error('JWT_REFRESH_SECRET is not defined');
 
-        const accessExpiresIn =
-          cfg.get<string>('JWT_EXPIRES_IN') ?? '15m';
+        const accessExpiresIn = cfg.get<string>('JWT_EXPIRES_IN') ?? '15m';
         const refreshExpiresIn =
           cfg.get<string>('JWT_REFRESH_EXPIRES_IN') ?? '7d';
 
@@ -42,7 +44,7 @@ import { Role } from 'src/users/entities/role.entity';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   exports: [JwtModule],
 })
 export class AuthModule {}
