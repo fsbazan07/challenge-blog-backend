@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { User } from './users/entities/user.entity';
 import { Role } from './users/entities/role.entity';
+import { PostsModule } from './posts/posts.module';
+import { PostEntity } from './posts/entities/post.entity';
 
 @Module({
   imports: [
@@ -24,11 +26,12 @@ import { Role } from './users/entities/role.entity';
       database: process.env.DB_NAME ?? 'myblogdb',
       synchronize: false,
       logging: false,
-      entities: [User, Role],
+      entities: [User, Role, PostEntity],
     }),
 
     // ✅ habilita /api/auth/*
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
