@@ -81,6 +81,7 @@ export class PostsService {
       .leftJoin('post.author', 'author')
       .addSelect(['author.id', 'author.name', 'author.email'])
       .where('post.authorId = :userId', { userId })
+      .andWhere('post.status != :deleted', { deleted: PostStatus.DELETED })
       .orderBy('post.created_at', 'DESC')
       .skip(skip)
       .take(limit);
