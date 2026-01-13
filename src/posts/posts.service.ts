@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostEntity, PostStatus } from './entities/post.entity';
@@ -104,6 +108,25 @@ export class PostsService {
       limit,
       total,
     };
+  }
+
+  async getById(id: string, userId?: string) {
+    const post = await this.postsRepo.findOne({
+      where: { id },
+      relations: { author: true },
+    });
+
+    if (!post) throw new NotFoundException('Post no encontrado.');
+
+    if (post.status === PostStatus.DELETED) {
+      throw new NotFoundException('Post no encontrado.');
+    }
+
+    if (post.status === PostStatus.DRAFT && post.authorId !== userId) {
+      throw new ForbiddenException('No tenés permiso para ver este post.');
+    }
+
+    return post;
   }
 
   async updateMine(
