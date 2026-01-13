@@ -12,6 +12,7 @@ import { User } from '../../users/entities/user.entity';
 export enum PostStatus {
   DRAFT = 'draft',
   PUBLISHED = 'published',
+  DELETED = 'deleted',
 }
 
 @Entity('posts')

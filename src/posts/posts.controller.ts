@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -33,6 +36,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { ListPostsQueryDto } from './dto/list-posts-query.dto';
 import { ListPostsResponseDto } from './dto/list-posts-response.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 function safeFilename(
   _req: unknown,
@@ -65,12 +69,28 @@ function coverFileFilter(
 export class PostsController {
   constructor(private readonly posts: PostsService) {}
 
+  //-------------------------------------- Get --------------------------------------------------//
+
+  //------------------------------ Listar posts publicados (feed público) ------------------------//
+
   @Get()
   @ApiOkResponse({ type: ListPostsResponseDto, description: 'Feed público' })
   list(@Query() query: ListPostsQueryDto) {
     return this.posts.listPublished(query);
   }
 
+  //------------------------------ Listar mis posts (auth) ---------------------------------------//
+
+  @Get('me')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  listMine(@CurrentUser() user: JwtPayload, @Query() query: ListPostsQueryDto) {
+    return this.posts.listMine(user.sub, query);
+  }
+
+  //------------------------------------- Post --------------------------------------------------//
+
+  //------------------------------- Crear nuevo post (auth) -------------------------------------//
   @Post()
   @ApiBearerAuth('bearer')
   @UseGuards(JwtAuthGuard)
@@ -122,5 +142,41 @@ export class PostsController {
       ? `/uploads/covers/${cover.filename}`
       : null;
     return this.posts.create(userId, dto, coverUrl);
+  }
+
+  //------------------------------------ Update --------------------------------------------------//
+  //------------------------------- Actualizar mi post (auth) -------------------------------------//
+
+  @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('cover', {
+      storage: diskStorage({
+        destination: './uploads/covers',
+        filename: safeFilename,
+      }),
+      limits: { fileSize: 5 * 1024 * 1024 },
+      fileFilter: coverFileFilter,
+    }),
+  )
+  updateMine(
+    @Param('id') id: string,
+    @CurrentUser() user: JwtPayload,
+    @Body() dto: UpdatePostDto,
+    @UploadedFile() cover?: { filename: string }, // 👈 importante
+  ) {
+    return this.posts.updateMine(user.sub, id, dto, cover as any);
+  }
+
+  //------------------------------------ Delete --------------------------------------------------//
+  //------------------------------- Eliminar mi post (auth) -------------------------------------//
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  deleteMine(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.posts.deleteMine(user.sub, id);
   }
 }
