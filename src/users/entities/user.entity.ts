@@ -26,6 +26,13 @@ export class User {
   @Column({ type: 'text', select: false })
   password: string; // hashed
 
+  @Exclude()
+  @Column({ type: 'text', nullable: true, select: false })
+  refreshTokenHash: string | null;
+
+  @Column({ type: 'timestamp with time zone', nullable: true })
+  refreshTokenExpiresAt: Date | null;
+
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
