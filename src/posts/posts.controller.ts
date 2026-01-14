@@ -88,6 +88,15 @@ export class PostsController {
     return this.posts.listMine(user.sub, query);
   }
 
+  //------------------------------ Obtener post por ID (público/auth) ----------------------------//
+  @Get(':id')
+  @ApiOkResponse({ type: PostResponseDto, description: 'Detalle de post' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  getById(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    const userId = user.sub; // puede ser undefined si es público
+    return this.posts.getById(id, userId);
+  }
   //------------------------------------- Post --------------------------------------------------//
 
   //------------------------------- Crear nuevo post (auth) -------------------------------------//
@@ -167,6 +176,7 @@ export class PostsController {
     @Body() dto: UpdatePostDto,
     @UploadedFile() cover?: { filename: string }, // 👈 importante
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return this.posts.updateMine(user.sub, id, dto, cover as any);
   }
 
