@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
-import type { JwtPayload } from 'src/auth/strategies/jwt.strategy';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorator/current-user.decorator';
+import type { JwtPayload } from '../auth/strategies/jwt.strategy';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
 import { UpdateMeDto } from './dto/update-me.dto';

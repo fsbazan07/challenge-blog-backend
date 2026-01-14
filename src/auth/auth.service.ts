@@ -11,10 +11,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { Role } from 'src/users/entities/role.entity';
+import { Role } from '../users/entities/role.entity';
 import { ConfigService } from '@nestjs/config';
 import { RegisterDto } from './dto/register.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import type ms from 'ms';
 
 type TokenPayload = Readonly<{ sub: string; role: string }>;
