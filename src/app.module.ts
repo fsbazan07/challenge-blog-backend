@@ -10,6 +10,7 @@ import { User } from './users/entities/user.entity';
 import { Role } from './users/entities/role.entity';
 import { PostsModule } from './posts/posts.module';
 import { PostEntity } from './posts/entities/post.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PostEntity } from './posts/entities/post.entity';
     // ✅ habilita /api/auth/*
     AuthModule,
     PostsModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn('uuid')
