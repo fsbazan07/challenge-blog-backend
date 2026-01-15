@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: challenge-blog-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: challenge_blog
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d challenge_blog']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: challenge-blog-api
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: challenge_blog
+
+      
+      JWT_SECRET: 9890e04e315541e837808de0e8ce7f5ec8d1d33fab8180376b291685d60b1d976e132ac7da98381cd012665665b6bb93f7a77b78bc9bacef36dfc211da3306c9
+      JWT_EXPIRES_IN: '1h'
+      JWT_REFRESH_SECRET: 45c851adfa3a0cb6151465807972de6b76b7c6f42b29f3c18755cd5d59850fef73191b55ad9960c49ef0dc490bf0e7fc96d4f0355c655cb6c654dbe01f1d85dc
+      JWT_REFRESH_EXPIRES_IN: '7d'
+     
+     
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
